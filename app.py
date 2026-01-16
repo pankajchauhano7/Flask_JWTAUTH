@@ -47,9 +47,17 @@ class UserLogin(Resource):
             access_token = create_access_token(identity=user.id)
             return {"access_token": access_token}, 200
         return {"message": "Invalid credentials."}, 401
+# Protected Resource Example
+class ProtectedResource(Resource):
+    @jwt_required()
+    def get(self):
+        current_user_id = get_jwt_identity()
+        user = User.query.get(current_user_id)
+        return {"message": f"Hello, {user.username}!"}, 200
     
 api.add_resource(UserRegistration, '/register')
 api.add_resource(UserLogin, '/login')
+api.add_resource(ProtectedResource, '/secure')
 
 if __name__ == "__main__":
     app.run(debug=True)
